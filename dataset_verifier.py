@@ -1,37 +1,22 @@
 import os
-import json
 
-annotation_file = 'D:/Projects/Coding/deepvision/datasets/coco/annotations/instances_train2017.json'
-images_dir = 'D:/Projects/Coding/deepvision/datasets/coco/train2017'
+images_dir = 'D:/Projects/Coding/deepvision/datasets/coco/images/train2017'
+labels_dir = 'D:/Projects/Coding/deepvision/datasets/coco/labels/train2017'
 
-with open(annotation_file, 'r') as f:
-    data = json.load(f)
+for image_file in os.listdir(images_dir):
+    image_file_name = os.path.splitext(image_file)[0]
+    label_file = image_file_name + '.txt'
+    label_file_path = os.path.join(labels_dir, label_file)
 
-missing_files = []
-for image_info in data['images']:
-    image_file = os.path.join(images_dir, image_info['file_name'])
-    if not os.path.exists(image_file):
-        missing_files.append(image_info['file_name'])
+    if not os.path.exists(label_file_path):
+        print(f"Missing label file for image: {image_file}")
 
-if missing_files:
-    print(f"Missing files: {missing_files}")
-else:
-    print("All files are present.")
+for label_file in os.listdir(labels_dir):
+    label_file_name = os.path.splitext(label_file)[0]
+    image_file = label_file_name + '.jpg'
+    image_file_path = os.path.join(images_dir, image_file)
 
-if 'images' in data and data['images']:
-    print("\nFirst image entry:")
-    print(json.dumps(data['images'][0], indent=4))
-else:
-    print("No images found in annotation file.")
+    if not os.path.exists(image_file_path):
+        print(f"Missing image file for label: {label_file}")
 
-if 'annotations' in data and data['annotations']:
-    print("\nFirst annotation entry:")
-    print(json.dumps(data['annotations'][0], indent=4))
-else:
-    print("No annotations found in annotation file.")
-
-if 'categories' in data and data['categories']:
-    print("\nFirst category entry:")
-    print(json.dumps(data['categories'][0], indent=4))
-else:
-    print("No categories found in annotation file.")
+print("Dataset verification completed.")

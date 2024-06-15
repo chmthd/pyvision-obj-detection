@@ -1,9 +1,24 @@
 import os
 import json
 from tqdm import tqdm
-from pycocotools.coco import COCO
 
-def convert(size, box):
+annotation_paths = {
+    'train': 'D:/Projects/Coding/deepvision/datasets/coco/annotations/instances_train2017.json',
+    'val': 'D:/Projects/Coding/deepvision/datasets/coco/annotations/instances_val2017.json'
+}
+image_dirs = {
+    'train': 'D:/Projects/Coding/deepvision/datasets/coco/images/train2017',
+    'val': 'D:/Projects/Coding/deepvision/datasets/coco/images/val2017'
+}
+output_labels_dirs = {
+    'train': 'D:/Projects/Coding/deepvision/datasets/coco/labels/train2017',
+    'val': 'D:/Projects/Coding/deepvision/datasets/coco/labels/val2017'
+}
+
+for output_dir in output_labels_dirs.values():
+    os.makedirs(output_dir, exist_ok=True)
+
+def convert_bbox(size, box):
     dw = 1. / size[0]
     dh = 1. / size[1]
     x = (box[0] + box[2] / 2.0) * dw
@@ -12,37 +27,32 @@ def convert(size, box):
     h = box[3] * dh
     return (x, y, w, h)
 
-def convert_annotation(data_dir, image_id, coco, output_dir):
-    filename = os.path.join(data_dir, 'images', image_id + '.jpg')
-    if not os.path.exists(filename):
-        return
+# Process annotations
+for phase in ['train', 'val']:
+    print(f"Processing {phase} annotations...")
 
-    ann_ids = coco.getAnnIds(imgIds=image_id)
-    anns = coco.loadAnns(ann_ids)
-    img = coco.loadImgs(image_id)[0]
-    width = img['width']
-    height = img['height']
+    with open(annotation_paths[phase], 'r') as f:
+        coco_data = json.load(f)
+    
+    for image in tqdm(coco_data['images']):
+        image_id = image['id']
+        file_name = image['file_name']
+        width = image['width']
+        height = image['height']
 
-    with open(os.path.join(output_dir, image_id + '.txt'), 'w') as out_file:
-        for ann in anns:
-            category_id = ann['category_id']
-            box = convert((width, height), ann['bbox'])
-            out_file.write(str(category_id) + " " + " ".join([str(a) for a in box]) + '\n')
+        annotations = [a for a in coco_data['annotations'] if a['image_id'] == image_id]
+        if not annotations:
+            print(f"No annotations found for image {file_name}")
+            continue
 
-def main():
-    data_dir = 'datasets/coco'
-    output_dir = 'datasets/coco/labels'
+        label_file_path = os.path.join(output_labels_dirs[phase], os.path.splitext(file_name)[0] + '.txt')
+        
+        with open(label_file_path, 'w') as label_file:
+            for ann in annotations:
+                category_id = ann['category_id'] - 1  # YOLO class starts from 0
+                bbox = convert_bbox((width, height), ann['bbox'])
+                label_file.write(f"{category_id} {' '.join(map(str, bbox))}\n")
+        
+        print(f"Processed {file_name} with {len(annotations)} annotations")
 
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-
-    for dataset in ['train2017', 'val2017']:
-        ann_file = os.path.join(data_dir, 'annotations', 'instances_{}.json'.format(dataset))
-        coco = COCO(ann_file)
-
-        image_ids = coco.getImgIds()
-        for image_id in tqdm(image_ids):
-            convert_annotation(data_dir, str(image_id).zfill(12), coco, os.path.join(output_dir, dataset))
-
-if __name__ == '__main__':
-    main()
+print("Conversion completed.")
