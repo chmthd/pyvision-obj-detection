@@ -1,60 +1,50 @@
 import os
 import json
 from tqdm import tqdm
+from pycocotools.coco import COCO
+from pathlib import Path
 
-# Define paths for COCO annotations and images
-annotation_paths = {
-    'train': 'D:/Projects/Coding/deepvision/datasets/coco/annotations/instances_train2017.json',
-    'val': 'D:/Projects/Coding/deepvision/datasets/coco/annotations/instances_val2017.json'
-}
-image_dirs = {
-    'train': 'D:/Projects/Coding/deepvision/datasets/coco/train2017',
-    'val': 'D:/Projects/Coding/deepvision/datasets/coco/val2017'
-}
-output_labels_dirs = {
-    'train': 'D:/Projects/Coding/deepvision/datasets/coco/labels/train2017',
-    'val': 'D:/Projects/Coding/deepvision/datasets/coco/labels/val2017'
-}
+def create_yolo_annotation(bbox, image_width, image_height, category_id):
+    x_min, y_min, width, height = bbox
+    x_center = x_min + width / 2
+    y_center = y_min + height / 2
 
-for output_dir in output_labels_dirs.values():
-    os.makedirs(output_dir, exist_ok=True)
+    x_center /= image_width
+    y_center /= image_height
+    width /= image_width
+    height /= image_height
 
-# Function to convert COCO bbox to YOLO bbox format
-def convert_bbox(size, box):
-    dw = 1. / size[0]
-    dh = 1. / size[1]
-    x = (box[0] + box[2] / 2.0) * dw
-    y = (box[1] + box[3] / 2.0) * dh
-    w = box[2] * dw
-    h = box[3] * dh
-    return (x, y, w, h)
+    return f"{category_id} {x_center} {y_center} {width} {height}"
 
-# Process annotations for both training and validation phases
-for phase in ['train', 'val']:
-    print(f"Processing {phase} annotations...")
+def convert_coco_to_yolo(coco_annotation_file, image_dir, output_dir):
+    coco = COCO(coco_annotation_file)
+    image_ids = coco.getImgIds()
+    category_ids = coco.getCatIds()
 
-    with open(annotation_paths[phase], 'r') as f:
-        coco_data = json.load(f)
-    
-    for image in tqdm(coco_data['images']):
-        image_id = image['id']
-        file_name = image['file_name']
-        width = image['width']
-        height = image['height']
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
 
-        annotations = [a for a in coco_data['annotations'] if a['image_id'] == image_id]
-        if not annotations:
-            print(f"No annotations found for image {file_name}")
-            continue
+    for image_id in tqdm(image_ids, desc=f'Processing {os.path.basename(image_dir)}'):
+        image_info = coco.loadImgs(image_id)[0]
+        annotation_ids = coco.getAnnIds(imgIds=image_id, catIds=category_ids, iscrowd=None)
+        annots = coco.loadAnns(annotation_ids)
 
-        label_file_path = os.path.join(output_labels_dirs[phase], os.path.splitext(file_name)[0] + '.txt')
-        
-        with open(label_file_path, 'w') as label_file:
-            for ann in annotations:
-                category_id = ann['category_id'] - 1  # YOLO class indices start from 0
-                bbox = convert_bbox((width, height), ann['bbox'])
-                label_file.write(f"{category_id} {' '.join(map(str, bbox))}\n")
-        
-        print(f"Processed {file_name} with {len(annotations)} annotations")
+        label_filename = os.path.join(output_dir, f"{Path(image_info['file_name']).stem}.txt")
+        with open(label_filename, 'w') as label_file:
+            for annotation in annots:
+                category_id = annotation['category_id'] - 1 
+                bbox = annotation['bbox']
+                yolo_annotation = create_yolo_annotation(bbox, image_info['width'], image_info['height'], category_id)
+                label_file.write(yolo_annotation + '\n')
 
-print("Conversion completed.")
+# Convert train2017
+coco_annotation_file = 'D:/Projects/Coding/deepvision/datasets/coco/annotations/instances_train2017.json'
+image_dir = 'D:/Projects/Coding/deepvision/datasets/coco/train2017'
+output_dir = 'D:/Projects/Coding/deepvision/datasets/coco/labels/train2017'
+convert_coco_to_yolo(coco_annotation_file, image_dir, output_dir)
+
+# Convert val2017
+coco_annotation_file = 'D:/Projects/Coding/deepvision/datasets/coco/annotations/instances_val2017.json'
+image_dir = 'D:/Projects/Coding/deepvision/datasets/coco/val2017'
+output_dir = 'D:/Projects/Coding/deepvision/datasets/coco/labels/val2017'
+convert_coco_to_yolo(coco_annotation_file, image_dir, output_dir)

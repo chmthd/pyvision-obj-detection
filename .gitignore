@@ -1,5 +1,7 @@
 .venv/
 datasets/
-yolov5/
+yolov5
+train_list.txt
+val_list.txt
 prerequisites.txt
 .vs/
