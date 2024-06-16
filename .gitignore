@@ -1,5 +1,6 @@
 .venv/
 datasets/
+model
 yolov5
 train_list.txt
 val_list.txt
