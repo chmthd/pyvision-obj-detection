@@ -1,5 +1,5 @@
-train: D:\Projects\Coding\deepvision\datasets\coco\train2017\images
-val: D:\Projects\Coding\deepvision\datasets\coco\val2017\images
+train: D:\Projects\Coding\deepvision\datasets\coco\train2017\
+val: D:\Projects\Coding\deepvision\datasets\coco\val2017\
 
 nc: 80  # number of classes
 names: [
