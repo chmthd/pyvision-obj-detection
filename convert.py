@@ -7,8 +7,7 @@ annotation_paths = {
     'val': 'D:/Projects/Coding/deepvision/datasets/coco/annotations/instances_val2017.json'
 }
 image_dirs = {
-    'train': 'D:/Projects/Coding/deepvision/datasets/coco/images/train2017',
-    'val': 'D:/Projects/Coding/deepvision/datasets/coco/images/val2017'
+    'val': 'D:/Projects/Coding/deepvision/datasets/coco/val2017'
 }
 output_labels_dirs = {
     'train': 'D:/Projects/Coding/deepvision/datasets/coco/labels/train2017',

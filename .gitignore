@@ -1,4 +1,5 @@
 .venv/
 datasets/
+yolov5/
 prerequisites.txt
 .vs/
