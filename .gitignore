@@ -11,3 +11,5 @@ train_list.txt
 val_list.txt
 prerequisites.txt
 
+#ngrok
+ngrok.exe
