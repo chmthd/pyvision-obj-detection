@@ -1,5 +1,5 @@
 (async () => {
-    const response = await fetch('/ip');
+    const response = await fetch('http://localhost:8000/ip');
     const { ip } = await response.json();
 
     const video = document.getElementById('video');

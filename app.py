@@ -28,7 +28,8 @@ local_ip = os.getenv("IP_ADDRESS", get_local_ip())
 
 # Allow CORS
 origins = [
-    f"http://{local_ip}:8080",
+    "http://localhost:8080", 
+    f"http://{local_ip}:8080",  
 ]
 
 app.add_middleware(
