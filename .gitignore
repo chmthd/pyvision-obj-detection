@@ -1,8 +1,13 @@
+#dir
 .venv/
 datasets/
-model
-yolov5
+.vs/
+
+#env
+.env
+
+#txt
 train_list.txt
 val_list.txt
 prerequisites.txt
-.vs/
+
