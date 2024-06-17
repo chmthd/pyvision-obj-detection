@@ -1,6 +1,9 @@
 from fastapi import FastAPI, File, UploadFile
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from starlette.requests import Request
 import torch
 import cv2
 import numpy as np
@@ -12,9 +15,11 @@ import time
 import threading
 import uvicorn
 
-load_dotenv() 
+load_dotenv()  
 
 app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
 
 def get_local_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -44,8 +49,8 @@ local_ip = os.getenv("IP_ADDRESS", get_local_ip())
 # Initialize ngrok_url to none and origins list
 ngrok_url = None
 origins = [
-    "http://localhost:8080",
-    f"http://{local_ip}:8080",
+    "http://localhost:8000",
+    f"http://{local_ip}:8000",
 ]
 
 # Update ngrok URL and origins dynamically
@@ -54,7 +59,7 @@ def update_ngrok_url():
     while not ngrok_url:
         ngrok_url = get_ngrok_url()
         if ngrok_url:
-            print(f"ngrok URL: {ngrok_url}")  # Logging
+            print(f"ngrok URL: {ngrok_url}")
             origins.append(ngrok_url)
             app.add_middleware(
                 CORSMiddleware,
@@ -64,17 +69,14 @@ def update_ngrok_url():
                 allow_headers=["*"],
             )
             break
-        time.sleep(1)
+        time.sleep(1) 
 
+# Start a separate thread to update ngrok URL and origins dynamically
 ngrok_thread = threading.Thread(target=update_ngrok_url)
 ngrok_thread.start()
 
 # Load the pretrained YOLOv5 model
 model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True).to('cuda')
-
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to the Object Detection API"}
 
 @app.post("/detect")
 async def detect(file: UploadFile = File(...)):
@@ -85,7 +87,7 @@ async def detect(file: UploadFile = File(...)):
 
 @app.get("/ip")
 def get_ip():
-    print(f"Local IP: {local_ip}")
+    print(f"Local IP: {local_ip}") 
     return JSONResponse(content={"ip": local_ip})
 
 @app.get("/ngrok-url")
@@ -94,6 +96,10 @@ def fetch_ngrok_url():
     if ngrok_url:
         return JSONResponse(content={"url": ngrok_url})
     return JSONResponse(content={"error": "ngrok URL not found"}, status_code=500)
+
+@app.get("/", response_class=HTMLResponse)
+async def read_index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
 if __name__ == "__main__":
     print("Starting FastAPI server...") 

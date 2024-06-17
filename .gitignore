@@ -1,14 +1,11 @@
 #dir
 .venv/
-datasets/
 .vs/
 
 #env
 .env
 
 #txt
-train_list.txt
-val_list.txt
 prerequisites.txt
 
 #ngrok

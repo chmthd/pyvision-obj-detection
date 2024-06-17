@@ -1,7 +1,7 @@
 (async () => {
     try {
         console.log('Fetching ngrok URL...');
-        const response = await fetch('http://localhost:8000/ngrok-url');
+        const response = await fetch('/ngrok-url');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
