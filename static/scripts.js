@@ -24,14 +24,17 @@
         const video = document.getElementById('video');
 
         // Access the device camera and stream to video element
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
+        const startCamera = async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 video.srcObject = stream;
-            })
-            .catch(err => {
+            } catch (err) {
                 console.error('Error accessing camera: ', err);
                 alert('Error accessing camera: ' + err.message);
-            });
+            }
+        };
+
+        startCamera();
 
         document.getElementById('capture').addEventListener('click', () => {
             const canvas = document.getElementById('canvas');
