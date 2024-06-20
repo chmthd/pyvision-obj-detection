@@ -79,7 +79,7 @@
         document.getElementById('capture').addEventListener('click', async () => {
             await startCamera();
             console.log('Camera feed started');
-            setInterval(detectObjects, 1000);
+            setInterval(detectObjects, 100);
         });
     } catch (err) {
         console.error('Initialization error:', err);
