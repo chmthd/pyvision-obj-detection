@@ -3,17 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Object Detection</title>
+    <title>PyVision: Real-Time Object Detection</title>
     <link rel="stylesheet" href="/static/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
 </head>
 <body>
-    <div class="container">
-        <h1>Object Detection</h1>
-        <video id="video" width="640" height="480" autoplay></video>
-        <button id="capture">Capture</button>
-        <canvas id="canvas" width="640" height="480"></canvas>
-    </div>
-    <script src="/static/scripts.js"></script>
+    <header>
+        <h1>PyVision</h1>
+        <h2>Real-Time Object Detection.</h2>
+    </header>
+    <main>
+        <section class="video-section">
+            <div class="video-container">
+                <p>Allow permissions to your camera</p>
+            </div>
+        </section>
+        <div id="capture" class="capture-button">
+            <button>Capture</button>
+        </div>
+        <section>
+            <h3>Application Objective</h3>
+            <p>PyVision is a solution designed to leverage real-time object detection using the YOLOv8 model. Built with FastAPI for the backend, 
+            it seamlessly integrates and deploys both API and frontend files. It aims to provide an easy-to-use interface for detecting objects using your camera.</p>
+        </section>
+        <section>
+            <h3>Advanced Features</h3>
+            <p>It displays a live video feed from your camera upon permission. 
+            It allows you to capture images and visualize detected objects with bounding boxes. 
+            PyVision's responsive design ensures a consistent experience across various handheld devices. 
+            The automated deployment and dynamic ngrok URL handling simplify development and remote access.</p>
+        </section>
+        <section>
+            <h3>Setup and Deployment</h3>
+            <p>This application uses FastAPI for a modern, high-performance backend and serves the frontend with HTML, CSS, and JavaScript. 
+            Implementing the YOLOv5 model pretrained on the COCO dataset, it offers real-time object detection. Deployment is streamlined with ngrok, 
+            creating secure tunnels to localhost and making the application accessible over the internet.</p>
+        </section>
+    </main>
+    <footer>
+        &copy; 2024 PyVision. All rights reserved.
+    </footer>
 </body>
 </html>

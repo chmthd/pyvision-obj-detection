@@ -1,68 +1,122 @@
-﻿body {
-    font-family: 'Fira Code', monospace;
-    text-align: center;
-    background-color: #0f1419;
-    color: #e7e7e7;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-h1 {
-    color: #e7e7e7;
-    font-size: 2em;
-}
-
-video, canvas {
-    border: 2px solid #3b4252;
-    margin: 20px 0;
-    background-color: #2e3440;
-    width: 100%;
-    max-width: 640px;
-    height: auto;
-}
-
-button {
-    background-color: #4c566a;
-    color: #e7e7e7;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    margin-top: 20px;
-    width: 100%;
-    max-width: 640px;
-}
-
-button:hover {
-    background-color: #5e81ac;
-}
-
-.container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-}
-
-@media (max-width: 768px) {
-    h1 {
-        font-size: 1.5em;
-    }
-
-    button {
-        font-size: 14px;
-        padding: 8px 16px;
-    }
-}
-
-@media (max-width: 480px) {
-    h1 {
-        font-size: 1.2em;
-    }
-
-    button {
-        font-size: 12px;
-        padding: 6px 12px;
-    }
-}
+﻿
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #1E1E1E;
+            color: #EAEAEA;
+        }
+        header {
+            background-color: #1E1E1E;
+            color: #1DD79B;
+            padding: 20px 0;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+        header h2 {
+            margin: 0;
+            margin-top: 1rem;
+            font-size: 1em;
+            color: #A9A9A9;
+        }
+        main {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        section {
+            margin: 20px 0;
+        }
+        section h3 {
+            font-size: 1.6em;
+            margin-bottom: 10px;
+            color: #1DD79B;
+        }
+        section p {
+            font-size: 1em;
+            line-height: 1.6;
+        }
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: #1E1E1E;
+            color: #A9A9A9;
+        }
+        .video-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .video-container {
+            background-color: #333;
+            width: 100%;
+            max-width: 640px;
+            height: 360px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+            border: 2px solid #1DD79B;
+        }
+        .video-container p {
+            color: #A9A9A9;
+        }
+        .capture-button {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+        }
+        .capture-button button {
+            padding: 10px 20px;
+            background-color: #1DD79B;
+            border: none;
+            color: #1E1E1E;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 5px;
+            font-family: 'Inter';
+            font-weight: 600;
+        }
+        .capture-button button:hover {
+            background-color: #00E66F;
+        }
+        @media screen and (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+            header h2 {
+                font-size: 0.9em;
+            }
+            section h3 {
+                font-size: 1.4em;
+            }
+            section p {
+                font-size: 0.9em;
+            }
+            .video-container {
+                height: 320px;
+                padding: 20px;
+            }
+        }
+        @media screen and (max-width: 480px) {
+            header h1 {
+                font-size: 2em;
+            }
+            header h2 {
+                font-size: 0.8em;
+            }
+            section h3 {
+                font-size: 1.2em;
+            }
+            section p {
+                font-size: 0.8em;
+            }
+            .capture-button button {
+                font-size: 0.9em;
+                padding: 8px 16px;
+            }
+        }
