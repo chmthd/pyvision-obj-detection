@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -15,7 +15,7 @@ import time
 import threading
 import uvicorn
 
-load_dotenv()  
+load_dotenv()
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -46,14 +46,12 @@ def get_ngrok_url():
 
 local_ip = os.getenv("IP_ADDRESS", get_local_ip())
 
-# Initialize ngrok_url to none and origins list
 ngrok_url = None
 origins = [
     "http://localhost:8000",
     f"http://{local_ip}:8000",
 ]
 
-# Update ngrok URL and origins dynamically
 def update_ngrok_url():
     global ngrok_url, origins
     while not ngrok_url:
@@ -69,25 +67,40 @@ def update_ngrok_url():
                 allow_headers=["*"],
             )
             break
-        time.sleep(1) 
+        time.sleep(1)
 
-# Start a separate thread to update ngrok URL and origins dynamically
 ngrok_thread = threading.Thread(target=update_ngrok_url)
 ngrok_thread.start()
 
-# Load the pretrained YOLOv5 model
 model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True).to('cuda')
 
 @app.post("/detect")
 async def detect(file: UploadFile = File(...)):
-    img = cv2.imdecode(np.frombuffer(await file.read(), np.uint8), cv2.IMREAD_COLOR)
-    results = model(img)
-    detections = results.pandas().xyxy[0].to_json(orient="records")
-    return JSONResponse(content=detections)
+    try:
+        file_content = await file.read()
+        print(f"File content type: {type(file_content)}")
+        print(f"File content length: {len(file_content)} bytes")
+        
+        # Log a portion of the file content for verification
+        print(f"File content (first 100 bytes): {file_content[:100]}")
+
+        # Decode the image
+        img = cv2.imdecode(np.frombuffer(file_content, np.uint8), cv2.IMREAD_COLOR)
+        if img is None:
+            raise HTTPException(status_code=422, detail="Invalid image data")
+        
+        # Perform inference
+        results = model(img)
+        detections = results.pandas().xyxy[0].to_dict(orient="records")
+        print(f"Detections: {detections}")
+        return JSONResponse(content=detections)
+    except Exception as e:
+        print(f"Error processing file: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/ip")
 def get_ip():
-    print(f"Local IP: {local_ip}") 
+    print(f"Local IP: {local_ip}")
     return JSONResponse(content={"ip": local_ip})
 
 @app.get("/ngrok-url")
@@ -102,5 +115,5 @@ async def read_index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 if __name__ == "__main__":
-    print("Starting FastAPI server...") 
+    print("Starting FastAPI server...")
     uvicorn.run(app, host="0.0.0.0", port=8000)

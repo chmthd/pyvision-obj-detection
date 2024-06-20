@@ -10,12 +10,13 @@
 <body>
     <header>
         <h1>PyVision</h1>
-        <h2>Real-Time Object Detection.</h2>
+        <h2>Real-Time Object Detection</h2>
     </header>
     <main>
         <section class="video-section">
             <div class="video-container">
-                <p>Allow permissions to your camera</p>
+                <video id="video" width="640" height="480" autoplay></video>
+                <canvas id="canvas" width="640" height="480"></canvas>
             </div>
         </section>
         <div id="capture" class="capture-button">
@@ -43,5 +44,6 @@
     <footer>
         &copy; 2024 PyVision. All rights reserved.
     </footer>
+    <script src="/static/scripts.js"></script>
 </body>
 </html>
